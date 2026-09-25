@@ -1,0 +1,34 @@
+aws_region   = "ap-northeast-1"
+acm_region   = "us-east-1"
+project_name = "nagoyameshi"
+environment  = "prod"
+
+domain_name      = "gaukensho.com"
+hosted_zone_name = "gaukensho.com"
+
+my_ip = "60.87.84.173/32"
+
+github_owner       = "samurai2723terakoya"
+github_repo        = "saisyu-kadai-gauCICD"
+github_branch      = "main"
+github_oauth_token = "ghp_xxxxxxxxxxxxxxxxxxxxxI"
+
+vpc_cidr              = "10.0.0.0/16"
+public_subnet_a_cidr  = "10.0.1.0/24"
+public_subnet_c_cidr  = "10.0.2.0/24"
+private_subnet_a_cidr = "10.0.11.0/24"
+private_subnet_c_cidr = "10.0.12.0/24"
+
+db_name     = "laravel_nagoyameshi"
+db_username = "laravel"
+db_password = "oooooooooo"
+
+bastion_key_name      = "bastion-prod-key"
+bastion_instance_type = "t2.micro"
+
+app_key   = "base64:BHUgpqmN22cyp6fF98YCaAgM8Q+uwsm0pOGNGQEU3ok="
+app_env   = "production"
+app_debug = "false"
+app_url   = "https://gaukensho.com"
+
+alb_domain_name = "origin.gaukensho.com"
