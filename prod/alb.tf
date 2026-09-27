@@ -1,5 +1,5 @@
 data "aws_route53_zone" "main" {
-  name         = var.hosted_zone_name
+  name         = "${var.hosted_zone_name}."
   private_zone = false
 }
 
@@ -80,6 +80,7 @@ resource "aws_lb_listener" "https" {
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-2016-08"
   certificate_arn   = aws_acm_certificate_validation.alb.certificate_arn
+
 
   default_action {
     type             = "forward"

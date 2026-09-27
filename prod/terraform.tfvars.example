@@ -6,7 +6,7 @@ environment  = "prod"
 domain_name      = "gaukensho.com"
 hosted_zone_name = "gaukensho.com"
 
-my_ip = "60.87.84.173/32"
+my_ip = "60.87.216.206/32"
 
 github_owner       = "samurai2723terakoya"
 github_repo        = "saisyu-kadai-gauCICD"

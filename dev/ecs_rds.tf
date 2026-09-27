@@ -10,6 +10,7 @@ resource "aws_db_subnet_group" "dev" {
 resource "aws_db_instance" "mysql" {
   identifier             = "${var.project_name}-${var.environment}-mysql"
   allocated_storage      = 20
+  storage_type           = "gp3" # ★ gp3 に変更
   engine                 = "mysql"
   engine_version         = "8.0"
   instance_class         = "db.t4g.micro"
@@ -235,7 +236,7 @@ resource "aws_ecs_task_definition" "migration" {
 
 resource "aws_ecs_service" "app" {
   name            = "${var.project_name}-${var.environment}-service"
-  cluster         = aws_ecs_cluster.main.id
+  cluster         = aws_ecs_cluster.dev.id
   task_definition = aws_ecs_task_definition.app.arn
   desired_count   = 2
   launch_type     = "FARGATE"
@@ -257,12 +258,18 @@ resource "aws_ecs_service" "app" {
   tags = {
     Name = "${var.project_name}-${var.environment}-service"
   }
+
+   # ★ ここから追加：開発環境でもタスク定義の勝手な巻き戻しを無視する
+  lifecycle {
+    ignore_changes = [task_definition]
+  }
+  # 
 }
 
 resource "aws_appautoscaling_target" "ecs" {
   max_capacity       = 4
   min_capacity       = 2
-  resource_id        = "service/${aws_ecs_cluster.main.name}/${aws_ecs_service.app.name}"
+  resource_id        = "service/${aws_ecs_cluster.dev.name}/${aws_ecs_service.app.name}"
   scalable_dimension = "ecs:service:DesiredCount"
   service_namespace  = "ecs"
 }

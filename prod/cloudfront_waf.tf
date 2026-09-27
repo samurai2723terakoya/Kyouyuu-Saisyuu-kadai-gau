@@ -84,8 +84,8 @@ resource "aws_cloudfront_distribution" "prod" {
   aliases = [var.domain_name]
 
   origin {
-  domain_name = var.alb_domain_name
-  origin_id   = "${var.project_name}-${var.environment}-alb-origin"
+    domain_name = var.alb_domain_name
+    origin_id   = "${var.project_name}-${var.environment}-alb-origin"
 
     custom_origin_config {
       http_port              = 80
@@ -121,6 +121,7 @@ resource "aws_cloudfront_distribution" "prod" {
     ssl_support_method       = "sni-only"
     minimum_protocol_version = "TLSv1.2_2021"
   }
+
 
   web_acl_id = aws_wafv2_web_acl.cloudfront.arn
 
