@@ -10,7 +10,7 @@ resource "aws_db_subnet_group" "prod" {
 resource "aws_db_instance" "mysql" {
   identifier        = "${var.project_name}-${var.environment}-mysql"
   allocated_storage = 20
-  storage_type           = "gp3" # ★ gp3 に変更
+  storage_type      = "gp3" # ★ gp3 に変更
   engine            = "mysql"
   engine_version    = "8.0"
   instance_class    = "db.t4g.micro"
@@ -26,6 +26,9 @@ resource "aws_db_instance" "mysql" {
   skip_final_snapshot    = true
   publicly_accessible    = false
 
+  # ★ ここを追加：メンテナンス時間を待たずに、今すぐ設定を反映する
+  apply_immediately = true
+  # gp3変更用一時追加項目
   tags = {
     Name = "${var.project_name}-${var.environment}-mysql"
   }
@@ -259,7 +262,7 @@ resource "aws_ecs_service" "app" {
     Name = "${var.project_name}-${var.environment}-service"
   }
 
-   # ★ ここから追加：Terraformによるタスク定義の勝手な巻き戻しを無視する
+  # ★ ここから追加：Terraformによるタスク定義の勝手な巻き戻しを無視する
   lifecycle {
     ignore_changes = [task_definition]
   }

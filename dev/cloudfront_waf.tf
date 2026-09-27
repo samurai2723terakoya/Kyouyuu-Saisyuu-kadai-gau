@@ -96,8 +96,8 @@ resource "aws_cloudfront_distribution" "dev" {
   aliases = [var.domain_name]
 
   origin {
-  domain_name = var.alb_domain_name
-  origin_id   = "${var.project_name}-${var.environment}-alb-origin"
+    domain_name = var.alb_domain_name
+    origin_id   = "${var.project_name}-${var.environment}-alb-origin"
 
     custom_origin_config {
       http_port              = 80

@@ -77,9 +77,9 @@ resource "aws_codebuild_project" "app" {
     }
 
     environment_variable {
-  name  = "MIGRATION_TASK_DEFINITION"
-  value = aws_ecs_task_definition.migration.family
-}
+      name  = "MIGRATION_TASK_DEFINITION"
+      value = aws_ecs_task_definition.migration.family
+    }
 
     environment_variable {
       name  = "ECS_CLUSTER_NAME"

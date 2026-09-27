@@ -8,15 +8,15 @@ resource "aws_db_subnet_group" "dev" {
 }
 
 resource "aws_db_instance" "mysql" {
-  identifier             = "${var.project_name}-${var.environment}-mysql"
-  allocated_storage      = 20
-  storage_type           = "gp3" # ★ gp3 に変更
-  engine                 = "mysql"
-  engine_version         = "8.0"
-  instance_class         = "db.t4g.micro"
+  identifier        = "${var.project_name}-${var.environment}-mysql"
+  allocated_storage = 20
+  storage_type      = "gp3" # ★ gp3 に変更
+  engine            = "mysql"
+  engine_version    = "8.0"
+  instance_class    = "db.t4g.micro"
 
   backup_retention_period = 7
-  
+
   db_name                = var.db_name
   username               = var.db_username
   password               = var.db_password
@@ -26,6 +26,9 @@ resource "aws_db_instance" "mysql" {
   skip_final_snapshot    = true
   publicly_accessible    = false
 
+  # ★ ここを追加：メンテナンス時間を待たずに、今すぐ設定を反映する
+  apply_immediately = true
+  # gp3変更用一時追加項目
   tags = {
     Name = "${var.project_name}-${var.environment}-mysql"
   }
@@ -78,77 +81,77 @@ resource "aws_ecs_task_definition" "app" {
   memory                   = "512"
   execution_role_arn       = aws_iam_role.ecs_execution.arn
 
-container_definitions = jsonencode([
-  {
-    name      = "laravel"
-    image     = "${aws_ecr_repository.laravel.repository_url}:latest"
-    essential = true
+  container_definitions = jsonencode([
+    {
+      name      = "laravel"
+      image     = "${aws_ecr_repository.laravel.repository_url}:latest"
+      essential = true
 
-    portMappings = [
-      {
-        containerPort = 80
-        hostPort      = 80
-        protocol      = "tcp"
-      }
-    ]
+      portMappings = [
+        {
+          containerPort = 80
+          hostPort      = 80
+          protocol      = "tcp"
+        }
+      ]
 
-    environment = [
-      {
-        name  = "APP_NAME"
-        value = "Laravel"
-      },
-      {
-        name  = "APP_ENV"
-        value = var.app_env
-      },
-      {
-        name  = "APP_KEY"
-        value = var.app_key
-      },
-      {
-        name  = "APP_DEBUG"
-        value = var.app_debug
-      },
-      {
-        name  = "APP_URL"
-        value = var.app_url
-      },
-      {
-        name  = "DB_CONNECTION"
-        value = "mysql"
-      },
-      {
-        name  = "DB_HOST"
-        value = aws_db_instance.mysql.address
-      },
-      {
-        name  = "DB_PORT"
-        value = "3306"
-      },
-      {
-        name  = "DB_DATABASE"
-        value = var.db_name
-      },
-      {
-        name  = "DB_USERNAME"
-        value = var.db_username
-      },
-      {
-        name  = "DB_PASSWORD"
-        value = var.db_password
-      }
-    ]
+      environment = [
+        {
+          name  = "APP_NAME"
+          value = "Laravel"
+        },
+        {
+          name  = "APP_ENV"
+          value = var.app_env
+        },
+        {
+          name  = "APP_KEY"
+          value = var.app_key
+        },
+        {
+          name  = "APP_DEBUG"
+          value = var.app_debug
+        },
+        {
+          name  = "APP_URL"
+          value = var.app_url
+        },
+        {
+          name  = "DB_CONNECTION"
+          value = "mysql"
+        },
+        {
+          name  = "DB_HOST"
+          value = aws_db_instance.mysql.address
+        },
+        {
+          name  = "DB_PORT"
+          value = "3306"
+        },
+        {
+          name  = "DB_DATABASE"
+          value = var.db_name
+        },
+        {
+          name  = "DB_USERNAME"
+          value = var.db_username
+        },
+        {
+          name  = "DB_PASSWORD"
+          value = var.db_password
+        }
+      ]
 
-    logConfiguration = {
-      logDriver = "awslogs"
-      options = {
-        "awslogs-group"         = aws_cloudwatch_log_group.ecs.name
-        "awslogs-region"        = var.aws_region
-        "awslogs-stream-prefix" = "ecs"
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          "awslogs-group"         = aws_cloudwatch_log_group.ecs.name
+          "awslogs-region"        = var.aws_region
+          "awslogs-stream-prefix" = "ecs"
+        }
       }
     }
-  }
-])
+  ])
 
   tags = {
     Name = "${var.project_name}-${var.environment}-task"
@@ -259,7 +262,7 @@ resource "aws_ecs_service" "app" {
     Name = "${var.project_name}-${var.environment}-service"
   }
 
-   # ★ ここから追加：開発環境でもタスク定義の勝手な巻き戻しを無視する
+  # ★ ここから追加：開発環境でもタスク定義の勝手な巻き戻しを無視する
   lifecycle {
     ignore_changes = [task_definition]
   }
