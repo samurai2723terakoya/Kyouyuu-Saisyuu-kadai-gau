@@ -130,3 +130,36 @@ variable "alb_domain_name" {
   type        = string
   description = "Domain name used for ALB origin access from CloudFront"
 }
+# --- 追記 ---
+
+# ★ 追加：RDSスペック管理用の変数
+variable "db_instance_class" {
+  type        = string
+  description = "RDSのインスタンスクラス"
+}
+
+variable "db_allocated_storage" {
+  type        = number
+  description = "RDSの初期ストレージ容量 (GB)"
+}
+
+variable "db_storage_type" {
+  type        = string
+  description = "RDSのストレージタイプ"
+}
+
+variable "db_multi_az" {
+  type        = bool
+  description = "RDSのマルチAZ配置の有効化フラグ"
+}
+
+# ★ 追加：ECSタスクサイズ管理用の変数
+variable "ecs_task_cpu" {
+  type        = string
+  description = "ECSタスク定義のCPUユニット数"
+}
+
+variable "ecs_task_memory" {
+  type        = string
+  description = "ECSタスク定義のメモリサイズ"
+}

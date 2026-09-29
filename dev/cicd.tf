@@ -136,7 +136,7 @@ resource "aws_codepipeline" "app" {
         Owner                = var.github_owner
         Repo                 = var.github_repo
         Branch               = var.github_branch
-        OAuthToken           = var.github_oauth_token
+        OAuthToken           = local.secrets["github_oauth_token"] # ★ var.github_oauth_token から書き換え
         PollForSourceChanges = "true"
       }
     }

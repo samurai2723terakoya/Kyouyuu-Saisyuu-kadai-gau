@@ -14,7 +14,7 @@ resource "aws_sns_topic_subscription" "email" {
 resource "aws_cloudwatch_log_metric_filter" "ecs_error" {
   name           = "nagoyameshi-dev-ecs-error-filter"
   pattern        = "?ERROR ?Exception ?error ?Exception"
-  log_group_name = aws_cloudwatch_log_group.ecs.name    # /ecs/nagoyameshi-dev を自動参照
+  log_group_name = aws_cloudwatch_log_group.ecs.name # /ecs/nagoyameshi-dev を自動参照
 
   metric_transformation {
     name      = "DevECSErrorCount"

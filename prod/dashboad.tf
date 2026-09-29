@@ -1,5 +1,5 @@
 resource "aws_cloudwatch_dashboard" "main" {
- dashboard_name = "nagoyameshi-prod-dashboard"
+  dashboard_name = "nagoyameshi-prod-dashboard"
 
   dashboard_body = jsonencode({
     widgets = [

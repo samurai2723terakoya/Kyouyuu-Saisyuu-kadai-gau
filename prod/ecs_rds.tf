@@ -9,20 +9,23 @@ resource "aws_db_subnet_group" "prod" {
 
 resource "aws_db_instance" "mysql" {
   identifier        = "${var.project_name}-${var.environment}-mysql"
-  allocated_storage = 20
-  storage_type      = "gp3" # ★ gp3 に変更
+  allocated_storage = var.db_allocated_storage # ★ レビューシート対応：変数化
+  storage_type      = var.db_storage_type      # ★ レビューシート対応：変数化
   engine            = "mysql"
   engine_version    = "8.0"
-  instance_class    = "db.t4g.micro"
+  instance_class    = var.db_instance_class # ★ レビューシート対応：変数化
 
   backup_retention_period = 7
 
-  db_name                = var.db_name
-  username               = var.db_username
-  password               = var.db_password
+  db_name  = var.db_name
+  username = var.db_username
+
+  # ★ var.db_password から書き換え
+  password = local.secrets["db_password"]
+  # パスワード書き換え
   db_subnet_group_name   = aws_db_subnet_group.prod.name
   vpc_security_group_ids = [aws_security_group.rds.id]
-  multi_az               = true
+  multi_az               = var.db_multi_az # ★ レビューシート対応：変数化
   skip_final_snapshot    = true
   publicly_accessible    = false
 
@@ -77,8 +80,8 @@ resource "aws_ecs_task_definition" "app" {
   family                   = "${var.project_name}-${var.environment}-task"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                      = "256"
-  memory                   = "512"
+  cpu                      = var.ecs_task_cpu    # ★ レビューシート対応：変数化
+  memory                   = var.ecs_task_memory # ★ レビューシート対応：変数化
   execution_role_arn       = aws_iam_role.ecs_execution.arn
 
   container_definitions = jsonencode([
@@ -106,7 +109,7 @@ resource "aws_ecs_task_definition" "app" {
         },
         {
           name  = "APP_KEY"
-          value = var.app_key
+          value = local.secrets["app_key"] # ★ var.app_key から書き換え
         },
         {
           name  = "APP_DEBUG"
@@ -138,7 +141,7 @@ resource "aws_ecs_task_definition" "app" {
         },
         {
           name  = "DB_PASSWORD"
-          value = var.db_password
+          value = local.secrets["db_password"] # ★ var.db_password から書き換え
         }
       ]
 
@@ -162,8 +165,8 @@ resource "aws_ecs_task_definition" "migration" {
   family                   = "${var.project_name}-${var.environment}-migration-task"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                      = "256"
-  memory                   = "512"
+  cpu                      = var.ecs_task_cpu    # ★ レビューシート対応：変数化
+  memory                   = var.ecs_task_memory # ★ レビューシート対応：変数化
   execution_role_arn       = aws_iam_role.ecs_execution.arn
 
   container_definitions = jsonencode([
@@ -185,7 +188,7 @@ resource "aws_ecs_task_definition" "migration" {
         },
         {
           name  = "APP_KEY"
-          value = var.app_key
+          value = local.secrets["app_key"] # ★ var.app_key から書き換え
         },
         {
           name  = "APP_DEBUG"
@@ -217,7 +220,7 @@ resource "aws_ecs_task_definition" "migration" {
         },
         {
           name  = "DB_PASSWORD"
-          value = var.db_password
+          value = local.secrets["db_password"] # ★ var.db_password から書き換え
         }
       ]
 

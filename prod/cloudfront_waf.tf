@@ -64,6 +64,30 @@ resource "aws_wafv2_web_acl" "cloudfront" {
     }
   }
 
+  # ★ レビューシート対応：L7 DDoS対策ルール（レート制限）を明示的に実装
+  rule {
+    name     = "Limit-Request-Rate"
+    priority = 2 # 日本国内許可の後に判定
+
+    action {
+      block {} # 閾値を超えた悪意あるIPを自動ブロック
+    }
+
+    statement {
+      rate_based_statement {
+        limit              = 100 # 5分間に同じIPから100回以上のアクセスで発動
+        aggregate_key_type = "IP"
+      }
+    }
+
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = "${var.project_name}-${var.environment}-limit-request-rate"
+      sampled_requests_enabled   = true
+    }
+  }
+  #  ここまで追加項目
+
   visibility_config {
     cloudwatch_metrics_enabled = true
     metric_name                = "${var.project_name}-${var.environment}-cloudfront-waf"
